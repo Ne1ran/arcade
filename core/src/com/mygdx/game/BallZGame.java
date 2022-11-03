@@ -33,6 +33,7 @@ public class BallZGame extends ApplicationAdapter {
 
 	Sound lose;
 	Sound hit;
+	Sound enemyhit;
 	Music music;
 
 	long lastBallSpawnTime;
@@ -44,16 +45,17 @@ public class BallZGame extends ApplicationAdapter {
 	Rectangle enemy;
 
 	String scoreStr = "Score : ";
+	String start = "Press ENTER to start";
 
 	@Override
 	public void create () {
-
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.getData().setScale(2);
 
 		hit = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
 		lose = Gdx.audio.newSound(Gdx.files.internal("lose.mp3"));
+		enemyhit = Gdx.audio.newSound(Gdx.files.internal("enemyhit.mp3"));
 
 		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 		music.setLooping(true);
@@ -129,8 +131,9 @@ public class BallZGame extends ApplicationAdapter {
 		batch.draw(background, 0, 0);
 		batch.draw(playerTexture, player.getX(), 720 - player.getY() - player.getHeight());
 		batch.draw(enemyTexture, enemy.getX(), 720 - enemy.getY() - enemy.getHeight());
-		font.draw(batch, scoreStr + points, 580, 30);
+		font.draw(batch, start, 520, 360);
 		if (gameStarted) {
+			font.draw(batch, scoreStr + points, 580, 30);
 			for (Ball ball : balls){
 				batch.draw(ball.getTexture(), ball.getX(), 720 - ball.getY() - ball.getWidth());
 			}
@@ -141,6 +144,7 @@ public class BallZGame extends ApplicationAdapter {
 		if (!gameStarted){
 			if(Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 				gameStarted = true;
+				start = "";
 				spawnBall();
 			}
 		}
@@ -190,6 +194,7 @@ public class BallZGame extends ApplicationAdapter {
 
 				if (ball.overlaps(enemy)){
 					enemy.setY(MathUtils.random(0, 720 - enemy.getHeight()));
+					enemyhit.play(0.1F);
 					points += 3;
 					iter.remove();
 				}
